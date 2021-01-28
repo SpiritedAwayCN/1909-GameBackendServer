@@ -1,4 +1,4 @@
-package room.player;
+package player;
 
 public class Info {
 	Player player;

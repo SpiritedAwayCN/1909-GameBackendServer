@@ -1,4 +1,4 @@
-package room.player;
+package player;
 
 import java.io.*;
 import java.net.*;
@@ -91,7 +91,7 @@ public class Player {
 	}
 	
 	public synchronized void onDisconnect() {
-		// TODO 断线重连需要修改此处
+		// TODO 
 		if(client_socket.isClosed()) return;
 		try { client_socket.close(); } catch (IOException e2) { ; }
 		if(room != null) 

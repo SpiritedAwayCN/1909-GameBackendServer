@@ -1,7 +1,7 @@
 package room;
 
-import room.player.Info;
-import room.player.Player;
+import player.Info;
+import player.Player;
 
 public class GobangRoom extends GameRoom {
 	Player winner;
@@ -146,7 +146,7 @@ public class GobangRoom extends GameRoom {
 
 	@Override
 	public boolean leavePlayer(Player p) {
-		// TODO 断线重连需修改此处
+		// TODO 
 		players.remove(p);
 		playerCounter -= 1;
 		if(status == RoomStatus.WATING) {

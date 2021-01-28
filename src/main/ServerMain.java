@@ -5,8 +5,8 @@ import java.net.*;
 
 import room.GameRoom;
 import room.GobangRoom;
-import room.player.Info;
-import room.player.Player;
+import player.Info;
+import player.Player;
 
 public class ServerMain implements Runnable{
 	private static final int PORT = 25565;

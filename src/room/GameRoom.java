@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import room.player.*;
+import player.*;
 
 public abstract class GameRoom implements Runnable{
 	public enum RoomStatus{
