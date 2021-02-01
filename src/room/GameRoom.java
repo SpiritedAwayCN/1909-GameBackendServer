@@ -102,7 +102,15 @@ public abstract class GameRoom implements Runnable {
 			}
 			
 			if (info.getMsgString().equals("L!E@A#V$E%")) {
-				info.getPlayer().onDisconnect();
+				Player player = info.getPlayer();
+				this.tempMap.clear();
+				tempMap.put("player",player.getBasicInfoMap());
+				tempMap.put("type", 4);
+				player.onDisconnect();
+				String msg = JSON.toJSONString(tempMap);
+				for(Player p : players){
+					p.sendMsg(msg);
+				}
 				continue;
 			}
 

@@ -63,9 +63,12 @@ public class GobangRoom extends GameRoom {
 		
 		currentId = 1;
 		Map<String, Object> map = getGameStatusMap();
+		Map<String, Object> map2 = new HashMap<>();
+		map2.put("type", 4);
+		map2.put("player", map);
 		for(Player p: players){
 			map.put("yourID", p.getId());
-			p.sendMsg(JSON.toJSONString(map));
+			p.sendMsg(JSON.toJSONString(map2));
 		}
 
 		timer = new Timer();
