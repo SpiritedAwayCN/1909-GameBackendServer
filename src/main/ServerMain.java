@@ -3,16 +3,13 @@ package main;
 import java.io.*;
 import java.net.*;
 
-import room.GameRoom;
-import room.GobangRoom;
-import player.Info;
 import player.Player;
 
 public class ServerMain implements Runnable{
 	private static final int PORT = 25565;
 	protected ServerSocket listen_socket;
-	protected Thread listenThread, tempRoomThread;
-	protected GameRoom tempRoom;
+	protected Thread listenThread, hallThread;
+	protected GameHall gameHall;
 
 	public static void main(String[] args) {
 		ServerMain server = new ServerMain();
@@ -23,10 +20,10 @@ public class ServerMain implements Runnable{
 			System.exit(1);
 		}
 		System.out.println("Server: listening on port " + PORT);
-		server.tempRoom = new GobangRoom(1);
-		server.tempRoomThread = new Thread(server.tempRoom);
+		server.gameHall = new GameHall();
+		server.hallThread = new Thread(server.gameHall);
+		server.hallThread.start();
 		server.listenThread = new Thread(server);
-		server.tempRoomThread.start();
 		server.listenThread.start();
 	}
 
@@ -35,8 +32,10 @@ public class ServerMain implements Runnable{
 		while(true) {
 			try {
                 Socket client_socket = listen_socket.accept();
-                Player player = new Player(client_socket, "unamed");
-                tempRoom.infoQueue.put(new Info(player, "join"));
+                final Player player = new Player(client_socket, gameHall);
+                new Thread(()->{
+					player.openStream();
+				}).start();
             }
 			catch (Exception e) {
                  e.printStackTrace();

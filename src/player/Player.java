@@ -2,9 +2,12 @@ package player;
 
 import java.io.*;
 import java.net.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.*;
+import java.util.concurrent.*;
 
+import com.alibaba.fastjson.JSON;
+
+import main.GameHall;
 import room.GameRoom;
 
 public class Player {
@@ -12,18 +15,24 @@ public class Player {
 	protected BufferedReader in;
 	protected PrintWriter out;
 	
-	BlockingQueue<String> sendQueue;
+	protected BlockingQueue<String> sendQueue;
+	protected BlockingQueue<Info> recvQueue;
 	
-	int id = -1;
-	boolean isReady;
-	GameRoom room;
-	String name;
-	public Thread listenThread;
-	public Thread sendThread;
+	protected int id = 0;
+	protected boolean isReady;
+	protected GameRoom room;
+	protected GameHall hall;
+
+	protected String name;
+	protected int avatarID;
+	protected Map<String, Object> basicInfoMap;
+
+	private Thread listenThread;
+	private Thread sendThread;
 	public Player(){}
-	public Player(Socket socket, String name){
+	public Player(Socket socket, GameHall hall){
 		this.client_socket = socket;
-		this.name = name;
+		this.hall = hall;
 		listenThread = new Thread(()->{
 			while(true) {
 				String msg = new String();
@@ -35,14 +44,14 @@ public class Player {
 				} 
 				if(msg == null) break;
 				try {
-					room.infoQueue.put(new Info(this, msg));
+					recvQueue.put(new Info(this, msg));
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 			try {
-				room.infoQueue.put(new Info(this, "L!E@A#V$E%"));
-			} catch (InterruptedException e) {
+				recvQueue.put(new Info(this, "L!E@A#V$E%"));
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		});
@@ -65,16 +74,33 @@ public class Player {
 		});
 	}
 	public boolean openStream() {
+		int fetchID = 0;
 		try {
             in = new BufferedReader(new InputStreamReader(client_socket.getInputStream()));
 			out = new java.io.PrintWriter(client_socket.getOutputStream());
 			sendQueue = new ArrayBlockingQueue<String>(20);
-        }
-        catch (IOException e) {
+
+			out.println("0.0.1");
+			out.flush();
+			// client_socket.setSoTimeout(30000);
+			String greetingString = in.readLine();
+			// client_socket.setSoTimeout(0);
+			Map<String, Object> playerInfoMap = JSON.parseObject(greetingString), infoMap = new HashMap<>();
+			this.name = (String)playerInfoMap.get("name");
+			this.avatarID = (int)playerInfoMap.get("avatarID");
+			fetchID = (int)playerInfoMap.get("fetch");
+
+			infoMap.put("name", this.name);
+			infoMap.put("avatarID", this.avatarID);
+			this.basicInfoMap = infoMap;
+
+        } catch (Exception e) {
             try { client_socket.close(); } catch (IOException e2) { ; }
             e.printStackTrace();
             return false;
-        }
+		}
+
+		this.hall.joinPlayer(this, fetchID);
 		sendThread.start();
 		listenThread.start();
 		return true;
@@ -91,12 +117,16 @@ public class Player {
 	}
 	
 	public synchronized void onDisconnect() {
-		// TODO 
 		if(client_socket.isClosed()) return;
 		try { client_socket.close(); } catch (IOException e2) { ; }
 		if(room != null) 
 			room.leavePlayer(this);
-		
+		else if(recvQueue != null)
+			hall.leavePlayer(this);
+	}
+
+	public void setRecvQueue(BlockingQueue<Info> recvQueue) {
+		this.recvQueue = recvQueue;
 	}
 	
 	public String getName() {
@@ -110,6 +140,15 @@ public class Player {
 	}
 	public boolean getIsReady() {
 		return isReady;
+	}
+	public int getAvatarID() {
+		return avatarID;
+	}
+	public Map<String, Object> getBasicInfoMap() {
+		return basicInfoMap;
+	}
+	public GameHall getHall() {
+		return hall;
 	}
 	public void setIsReady(boolean isReady) {
 		this.isReady = isReady;
