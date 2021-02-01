@@ -1,12 +1,12 @@
-package room;
+package room.chess;
 
-public class GobangFields {
-    protected int time = 20000;
-    protected int byoTime = 10000;
+public class ChessField {
+    protected int time = 300000;
+    protected int byoTime = 30000;
     protected int byoCount = 3;
 
-    GobangFields(){}
-    GobangFields(int time, int byoTime, int byoCount){
+    public ChessField(){}
+    public ChessField(int time, int byoTime, int byoCount){
         this.time = time;
         this.byoTime = byoTime;
         this.byoCount = byoCount;
@@ -56,9 +56,9 @@ public class GobangFields {
     }
 
     public int getRemainTime(long ms){
-        if(lastMillion == -1) return time;
+        if(lastMillion == -1 || time == -1) return time;
         int ans = time - (int)(ms - lastMillion);
-        if(ans < 0) ans = -1;
+        if(ans < 0) ans = 0;
         return ans;
     }
     public int getRemainByoTime(long ms){

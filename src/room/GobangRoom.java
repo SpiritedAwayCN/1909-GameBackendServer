@@ -5,7 +5,7 @@ import java.util.*;
 import com.alibaba.fastjson.JSON;
 
 import player.*;
-import room.format.*;
+import room.chess.*;
 
 public class GobangRoom extends GameRoom {
 	public static final int roomTypeID = 1;
@@ -14,7 +14,7 @@ public class GobangRoom extends GameRoom {
 	int currentId;
 	private Timer timer;
 
-	private ArrayList<GobangFields> fields = new ArrayList<>();
+	private ArrayList<ChessField> fields = new ArrayList<>();
 	
 	public GobangRoom() {}
 	public GobangRoom(int id) {
@@ -54,7 +54,7 @@ public class GobangRoom extends GameRoom {
 
 		for (int i = 0; i < players.size(); i++) {
 			players.get(i).setId(i + 1);
-			fields.add(new GobangFields());
+			fields.add(new ChessField());
 		}
 
 		for(int i = 0; i < BOARDSIZE; i++)
@@ -87,8 +87,8 @@ public class GobangRoom extends GameRoom {
 				timer.cancel();
 				// System.out.println("Time out");
 				Player p = info.getPlayer();
-				GobangFields field = fields.get(currentId - 1);
-				GobangInteractFormat interactFormat = new GobangInteractFormat();
+				ChessField field = fields.get(currentId - 1);
+				InteractFormat interactFormat = new InteractFormat();
 				interactFormat.setType(1);
 				interactFormat.setPlayerID(currentId);
 				if(field.getTime() >= 0){
@@ -116,7 +116,7 @@ public class GobangRoom extends GameRoom {
 			}
 			
 			if (info.getMsgString().equals("L!E@A#V$E%")) {
-				GobangInteractFormat interactFormat = new GobangInteractFormat();
+				InteractFormat interactFormat = new InteractFormat();
 				interactFormat.setType(1);
 				interactFormat.setPlayerID(info.getPlayer().getId());
 				interactFormat.setStatus(buildInterruptStatus(0, 0, -(info.getPlayer().getId() ^ 3)));
@@ -129,7 +129,7 @@ public class GobangRoom extends GameRoom {
 
 			try {
 				Map<String, Object> map = JSON.parseObject(info.getMsgString());
-				GobangInteractFormat interactFormat = new GobangInteractFormat();
+				InteractFormat interactFormat = new InteractFormat();
 				Player p = info.getPlayer();
 
 				int type = (int)map.get("type");
@@ -148,8 +148,8 @@ public class GobangRoom extends GameRoom {
 						interactFormat.setPlayerID(p.getId());
 						{
 							int x, y;
-							GobangStatusFormat statusFormat = new GobangStatusFormat();
-							GobangFields field = fields.get(p.getId() - 1);
+							StatusFormat statusFormat = new StatusFormat();
+							ChessField field = fields.get(p.getId() - 1);
 							long ms = System.currentTimeMillis();
 							
 							statusFormat.setTime(field.getRemainTime(ms));
@@ -210,8 +210,8 @@ public class GobangRoom extends GameRoom {
 		}
 	}
 
-	private GobangStatusFormat buildInterruptStatus(int bt, int bc, int turnID){
-		GobangStatusFormat format = new GobangStatusFormat();
+	private StatusFormat buildInterruptStatus(int bt, int bc, int turnID){
+		StatusFormat format = new StatusFormat();
 		format.setCode(-2);
 		format.setNumber(-1);
 		format.setTime(-1);
@@ -287,11 +287,11 @@ public class GobangRoom extends GameRoom {
 
 	public Map<String, Object> getGameStatusMap(){
 		Map<String, Object> map = new HashMap<>();
-		ArrayList<GobangMapFormat> playerFormats = new ArrayList<>();
+		ArrayList<MapFormat> playerFormats = new ArrayList<>();
 		for(int i = 0; i < players.size(); i++){
-			GobangMapFormat format = new GobangMapFormat();
+			MapFormat format = new MapFormat();
 			Player player = players.get(i);
-			GobangFields field = fields.get(i);
+			ChessField field = fields.get(i);
 
 			long ms = System.currentTimeMillis();
 			format.setAvatarID(player.getAvatarID());

@@ -1,6 +1,6 @@
-package room.format;
+package room.chess;
 
-public class GobangStatusFormat {
+public class StatusFormat {
     int code;
     int number;
     int time;

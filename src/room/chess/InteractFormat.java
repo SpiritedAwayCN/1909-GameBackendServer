@@ -1,6 +1,6 @@
-package room.format;
+package room.chess;
 
-public class GobangInteractFormat {
+public class InteractFormat {
     private int type;
     private Object status;
     private String msg;

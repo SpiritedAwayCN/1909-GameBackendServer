@@ -1,6 +1,6 @@
-package room.format;
+package room.chess;
 
-public class GobangMapFormat {
+public class MapFormat {
     private String name;
     private int avatarID;
     private int playerID;
