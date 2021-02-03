@@ -38,6 +38,7 @@ public class Player {
 				String msg = new String();
 				try {
 					msg = in.readLine();
+					System.out.println("R: " + msg);
 				} catch(IOException e) {
 				// 	e.printStackTrace(); //SocketException?
 					break;
@@ -59,6 +60,7 @@ public class Player {
 			while (true) {
 				try {
 					String msg = sendQueue.take();
+					System.out.println("S:" + msg);
 					out.println(msg);
 					out.flush();
 				} catch (Exception e) {
@@ -76,14 +78,15 @@ public class Player {
 	public boolean openStream() {
 		int fetchID = 0;
 		try {
-            in = new BufferedReader(new InputStreamReader(client_socket.getInputStream()));
-			out = new java.io.PrintWriter(client_socket.getOutputStream());
+            in = new BufferedReader(new InputStreamReader(client_socket.getInputStream(), "UTF-8"));
+			out = new java.io.PrintWriter(new OutputStreamWriter(client_socket.getOutputStream(), "UTF-8"));
 			sendQueue = new ArrayBlockingQueue<String>(20);
 
 			out.println("0.0.1");
 			out.flush();
 			// client_socket.setSoTimeout(30000);
 			String greetingString = in.readLine();
+			System.out.println("R: " + greetingString);
 			// client_socket.setSoTimeout(0);
 			Map<String, Object> playerInfoMap = JSON.parseObject(greetingString), infoMap = new HashMap<>();
 			this.name = (String)playerInfoMap.get("name");
