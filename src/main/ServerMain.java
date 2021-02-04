@@ -5,7 +5,7 @@ import java.net.*;
 
 import player.Player;
 
-public class ServerMain implements Runnable{
+public class ServerMain implements Runnable {
 	private static final int PORT = 25565;
 	protected ServerSocket listen_socket;
 	protected Thread listenThread, hallThread;
@@ -19,7 +19,6 @@ public class ServerMain implements Runnable{
 			e.printStackTrace();
 			System.exit(1);
 		}
-		System.out.println("Server: listening on port " + PORT);
 		server.gameHall = new GameHall();
 		server.hallThread = new Thread(server.gameHall);
 		server.hallThread.start();
@@ -29,6 +28,12 @@ public class ServerMain implements Runnable{
 
 	@Override
 	public void run() {
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		System.out.println("Server: listening on port " + PORT);
 		while(true) {
 			try {
                 Socket client_socket = listen_socket.accept();
